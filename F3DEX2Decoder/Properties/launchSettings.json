@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "F3DEX2Decoder": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\m64\\vanilla_bob.dump 0x80208000"
+    }
+  }
+}
