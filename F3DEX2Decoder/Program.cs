@@ -28,6 +28,22 @@ namespace F3DEX2Decoder
     }
     public static class F3DEX2Decoder
     {
+        public static ulong SegToVirtual(ulong address, ulong[] segTable)
+        {
+            if (address >= 0x80000000)
+            {
+                address -= 0x80000000;
+            }
+            if ((address & 0xFF000000) != 0)
+            {
+                int segment = (int)(address >> 24) & 0xFF;
+                ulong segmentAddr = segTable[segment] & 0x1FFFFFF;
+                address &= 0xFFFFFF;
+                address += segmentAddr;
+            }
+
+            return address;
+        }
         public static void PrintDisplaylist(byte[] rdram, ulong address, ulong[] segTable, ref int totalTris, ref int totalVertices, string indentation = "")
         {
             List<F3DEX2Command> cmds = GetDLCommands(rdram, address, segTable);
@@ -40,7 +56,7 @@ namespace F3DEX2Decoder
 
                 if (cmdStr.StartsWith("gs"))
                 {
-                    Console.Write(string.Format("{0:X16}: ", cmd.Words));
+                    Console.Write(string.Format("{0:X16}@{1:X8}/{2:X8}: ", cmd.Words, address + (ulong)(i * 8), SegToVirtual(address + (ulong)(i * 8), segTable)));
                     Console.WriteLine(indentation + cmdStr + ",");
                 }
                 else
@@ -69,17 +85,8 @@ namespace F3DEX2Decoder
         public static List<F3DEX2Command> GetDLCommands(byte[] rdram, ulong address, ulong[] segTable)
         {
             List<F3DEX2Command> commands = new List<F3DEX2Command>();
-            if (address >= 0x80000000)
-            {
-                address -= 0x80000000;
-            }
-            if ((address & 0xFF000000) != 0)
-            {
-                int segment = (int)(address >> 24) & 0xFF;
-                ulong segmentAddr = segTable[segment] & 0x1FFFFFF;
-                address &= 0xFFFFFF;
-                address += segmentAddr;
-            }
+
+            address = SegToVirtual(address, segTable);
 
             do
             {

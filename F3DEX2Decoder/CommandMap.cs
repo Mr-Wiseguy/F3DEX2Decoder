@@ -587,7 +587,7 @@ namespace F3DEX2Decoder
                         }
                         else
                         {
-                            return string.Format("gsDPSetCombineLerp({0})", modeStr);
+                            return string.Format("gsDPSetCombineLERP({0})", modeStr);
                         }
                     }
                 case F3DEX2CommandId.G_SETENVCOLOR:
